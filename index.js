@@ -1,3 +1,4 @@
+
 // Get DOM elements
 const imageUpload = document.getElementById('image-upload');
 const fileStatus = document.getElementById('file-status');
@@ -69,7 +70,7 @@ function handleImageUpload(event) {
 }
 
 /**
- * Processes the image: resizes, converts to monochrome, and draws on canvas.
+ * Processes the image: resizes, applies Floyd-Steinberg dithering, and draws on canvas.
  * @param {HTMLImageElement} img The image element to process.
  */
 function processImage(img) {
@@ -83,23 +84,57 @@ function processImage(img) {
     ctx.clearRect(0, 0, TARGET_WIDTH, TARGET_HEIGHT);
     ctx.drawImage(img, 0, 0, TARGET_WIDTH, TARGET_HEIGHT);
 
-    // Get image data and convert to monochrome
+    // Get image data
     const imageData = ctx.getImageData(0, 0, TARGET_WIDTH, TARGET_HEIGHT);
     const data = imageData.data;
+    const width = imageData.width;
+    const height = imageData.height;
+
+    // Create a single-channel grayscale copy of the image data for processing
+    const grayData = new Float32Array(width * height);
     for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
-        // Use luminance formula for grayscale
         const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-        // Threshold for monochrome (black or white)
-        const color = luminance < 128 ? 0 : 255;
-        data[i] = color;     // Red
-        data[i + 1] = color; // Green
-        data[i + 2] = color; // Blue
+        grayData[i / 4] = luminance;
     }
 
-    // Put the monochrome data back onto the canvas
+    // Apply Floyd-Steinberg dithering
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const index = y * width + x;
+            const oldPixel = grayData[index];
+            const newPixel = oldPixel < 128 ? 0 : 255;
+            const quantError = oldPixel - newPixel;
+            
+            grayData[index] = newPixel;
+
+            // Distribute the error to neighboring pixels
+            if (x + 1 < width) {
+                grayData[index + 1] += quantError * 7 / 16;
+            }
+            if (x - 1 >= 0 && y + 1 < height) {
+                grayData[index + width - 1] += quantError * 3 / 16;
+            }
+            if (y + 1 < height) {
+                grayData[index + width] += quantError * 5 / 16;
+            }
+            if (x + 1 < width && y + 1 < height) {
+                grayData[index + width + 1] += quantError * 1 / 16;
+            }
+        }
+    }
+    
+    // Put the dithered data back into the imageData object
+    for (let i = 0; i < grayData.length; i++) {
+        const color = grayData[i];
+        data[i * 4] = color;
+        data[i * 4 + 1] = color;
+        data[i * 4 + 2] = color;
+    }
+
+    // Put the dithered data back onto the canvas
     ctx.putImageData(imageData, 0, 0);
 
     // Show output and enable download
@@ -201,7 +236,7 @@ function handleDownload() {
         a.href = url;
         a.download = 'output_monochrome.bmp';
         document.body.appendChild(a);
-        a.click();
+a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     } else {
