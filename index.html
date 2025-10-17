@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konverter Gambar ke BMP Monokrom</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Konfigurasi Font Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Tambahkan kelas text-center di sini untuk memastikan semua teks di dalamnya rata tengah -->
+    <div class="w-full max-w-sm bg-white shadow-2xl rounded-xl p-8 space-y-6 text-center">
+        
+        <!-- Logo Ditambahkan di sini -->
+        <div class="flex justify-center mb-4">
+            <img src="Logo-Omsetin-removebg-preview.png" 
+                 alt="Logo Omsetin" 
+                 class="h-20 w-auto"
+                 onerror="this.onerror=null; this.src='https://i.imgur.com/KeelD7P.png';"
+            >
+        </div>
+
+        <h1 class="text-2xl font-bold text-gray-800">Resizer & Konverter Monokrom (BMP)</h1>
+        <p class="text-sm text-gray-600">Unggah gambar PNG atau JPG. Ukuran akan diubah menjadi <span class="font-semibold text-indigo-600">300 x 150 piksel</span> dan dikonversi ke format <span class="font-semibold text-indigo-600">Bitmap (BMP) Monokrom</span>.</p>
+
+        <!-- Bagian Input File -->
+        <div class="border-2 border-dashed border-indigo-300 rounded-lg p-6 hover:bg-indigo-50 transition duration-300">
+            <label for="image-upload" class="cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v8" />
+                </svg>
+                <span class="mt-2 block text-sm font-medium text-gray-700" id="file-status">Pilih Gambar untuk Diunggah</span>
+                <input type="file" id="image-upload" accept=".png, .jpg, .jpeg" class="sr-only" />
+            </label>
+        </div>
+
+        <!-- Bagian Preview/Output -->
+        <div id="output-area" class="space-y-4 pt-4 border-t border-gray-200 hidden">
+            <h2 class="text-lg font-semibold text-gray-800">Pratinjau Output</h2>
+            <div class="flex justify-center">
+                <!-- Canvas untuk hasil resizing -->
+                <canvas id="output-canvas" width="300" height="150" class="border-4 border-gray-300 rounded-lg shadow-xl bg-gray-100"></canvas>
+            </div>
+
+            <!-- Bagian Tombol Download -->
+            <button id="download-btn" class="w-full py-3 px-4 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition duration-300 disabled:opacity-50" disabled>
+                Unduh Gambar(.bmp)
+            </button>
+        </div>
+
+        <!-- Bagian Pesan Status -->
+        <div id="status-message" class="text-sm text-red-500 hidden"></div>
+    </div>
+
+    <script type="module" src="index.js"></script>
+</body>
+</html>
