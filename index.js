@@ -80,6 +80,17 @@ function processImage(img) {
         return;
     }
 
+    // --- PERBAIKAN KUALITAS ---
+    // Matikan penghalusan gambar untuk mendapatkan hasil resize yang tajam (pixelated).
+    // Ini memberikan input yang jauh lebih baik untuk algoritma dithering.
+    ctx.imageSmoothingEnabled = false;
+    // @ts-ignore - For cross-browser compatibility
+    ctx.mozImageSmoothingEnabled = false;
+    // @ts-ignore
+    ctx.webkitImageSmoothingEnabled = false;
+    // @ts-ignore
+    ctx.msImageSmoothingEnabled = false;
+
     // Draw resized image
     ctx.clearRect(0, 0, TARGET_WIDTH, TARGET_HEIGHT);
     ctx.drawImage(img, 0, 0, TARGET_WIDTH, TARGET_HEIGHT);
@@ -236,7 +247,7 @@ function handleDownload() {
         a.href = url;
         a.download = 'output_monochrome.bmp';
         document.body.appendChild(a);
-a.click();
+        a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     } else {
@@ -245,5 +256,9 @@ a.click();
 }
 
 // Add event listeners
-imageUpload.addEventListener('change', handleImageUpload);
-downloadBtn.addEventListener('click', handleDownload);
+if (imageUpload) {
+    imageUpload.addEventListener('change', handleImageUpload);
+}
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', handleDownload);
+}
